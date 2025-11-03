@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence, PanInfo } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Star } from 'lucide-react';
 
 interface Card {
@@ -74,6 +74,8 @@ export default function CardSlider({
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [isTablet, setIsTablet] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   // Responsive breakpoints
   useEffect(() => {
@@ -107,7 +109,7 @@ export default function CardSlider({
   }, [startIndex]);
 
   useEffect(() => {
-    if (autoPlay && cards.length > 1) {
+    if (autoPlay && cards.length > 1 && !isDragging) {
       const timer = setInterval(() => {
         if (!isTransitioning) {
           goToNext();
@@ -115,7 +117,7 @@ export default function CardSlider({
       }, interval);
       return () => clearInterval(timer);
     }
-  }, [autoPlay, interval, cards.length, isTransitioning]);
+  }, [autoPlay, interval, cards.length, isTransitioning, isDragging]);
 
   const goToNext = () => {
     if (isTransitioning) return;
@@ -160,8 +162,32 @@ export default function CardSlider({
   };
 
   const goToSlide = (index: number) => {
-    if (isTransitioning) return;
+    if (isTransitioning || isDragging) return;
     setCurrentIndex(startIndex + index);
+  };
+
+  // Handle drag/swipe functionality
+  const handleDragStart = () => {
+    setIsDragging(true);
+  };
+
+  const handleDragEnd = (event: any, info: PanInfo) => {
+    setIsDragging(false);
+    
+    const threshold = 50; // Minimum distance to trigger slide change
+    const velocity = info.velocity.x;
+    const offset = info.offset.x;
+
+    // Determine if we should change slides based on drag distance and velocity
+    if (Math.abs(offset) > threshold || Math.abs(velocity) > 500) {
+      if (offset > 0 || velocity > 500) {
+        // Dragged right or fast right velocity - go to previous
+        goToPrevious();
+      } else if (offset < 0 || velocity < -500) {
+        // Dragged left or fast left velocity - go to next
+        goToNext();
+      }
+    }
   };
 
   if (!cards || cards.length === 0) {
@@ -175,8 +201,8 @@ export default function CardSlider({
   // Responsive card width calculation
   const getCardWidth = () => {
     if (isMobile) return 280; // Single card on mobile
-    if (isTablet) return 320; // Two cards on tablet
-    return 336; // Three cards on desktop
+    if (isTablet) return 300; // Two cards on tablet
+    return 300; // Reduced from 336 to 300 for desktop to prevent overflow
   };
 
   const cardWidth = getCardWidth();
@@ -215,11 +241,20 @@ export default function CardSlider({
 
         {/* Slider Container */}
         <div className="relative py-8 md:py-12">
-          <div className="overflow-hidden" style={{ minHeight: isMobile ? '320px' : isTablet ? '360px' : '400px' }}>
+          {/* Increased container height to prevent overflow */}
+          <div 
+            ref={containerRef}
+            className="overflow-hidden  p-5" 
+            style={{ 
+              minHeight: isMobile ? '320px' : isTablet ? '360px' : '380px', // Reduced desktop height
+              paddingTop: isMobile ? '30px' : '35px', // Reduced padding
+              paddingBottom: isMobile ? '10px' : '15px'
+            }}
+          >
             <motion.div
-              className="flex items-center"
+              className="flex items-center cursor-grab active:cursor-grabbing"
               animate={{
-                x: -(currentIndex - middleCardIndex) * (cardWidth + (isMobile ? 16 : 24)) // Responsive spacing
+                x: -(currentIndex - middleCardIndex) * (cardWidth + (isMobile ? 16 : 24))
               }}
               transition={
                 isTransitioning ? {
@@ -228,13 +263,20 @@ export default function CardSlider({
                   damping: 30,
                   duration: 0.3
                 } : {
-                  duration: 0 // Sem animação durante reset
+                  duration: 0
                 }
               }
               style={{
                 width: `${extendedCards.length * (cardWidth + (isMobile ? 16 : 24))}px`,
-                height: isMobile ? '300px' : isTablet ? '340px' : '350px'
+                height: isMobile ? '300px' : isTablet ? '340px' : '320px' // Reduced height to match card sizes
               }}
+              // Add drag functionality
+              drag={isMobile ? "x" : false}
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={0.1}
+              onDragStart={handleDragStart}
+              onDragEnd={handleDragEnd}
+              whileDrag={{ scale: 0.98 }}
             >
               {extendedCards.map((card, index) => {
                 // O card destacado é sempre o que está na posição central visível
@@ -258,17 +300,17 @@ export default function CardSlider({
                       marginRight: isMobile ? '16px' : '24px'
                     }}
                     animate={{
-                      scale: isHighlighted ? (isMobile ? 1.02 : 1.1) : isVisible ? 0.95 : 0.9,
+                      scale: isHighlighted ? (isMobile ? 1.02 : 1.05) : isVisible ? 0.95 : 0.9, // Reduced scale for mobile performance
                       opacity: isHighlighted ? 1 : isVisible ? 0.7 : 0.4,
-                      y: isHighlighted ? (isMobile ? -10 : -20) : 0
+                      y: isHighlighted ? (isMobile ? -5 : -15) : 0 // Reduced Y movement to prevent overflow
                     }}
                     transition={{
-                      duration: 0.3,
+                      duration: isMobile ? 0.2 : 0.3, // Faster transitions on mobile
                       ease: "easeInOut"
                     }}
                   >
                     <div className={`h-full p-4 md:p-6 rounded-lg shadow-lg transition-all duration-500 flex flex-col justify-between ${
-                      isMobile ? 'min-h-[260px]' : isTablet ? 'min-h-[280px]' : 'min-h-[280px]'
+                      isMobile ? 'min-h-[240px]' : isTablet ? 'min-h-[260px]' : 'min-h-[240px]' // Reduced height for desktop
                     } ${
                       isHighlighted 
                         ? 'bg-blue-900 text-white border-4 border-blue-600 shadow-2xl' 
@@ -329,10 +371,10 @@ export default function CardSlider({
             </>
           )}
 
-          {/* Mobile Touch Navigation Hint */}
+          {/* Mobile Touch Navigation Hint - Updated */}
           {isMobile && (
             <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-xs text-gray-500 bg-white/80 px-3 py-1 rounded-full">
-              Deslize para navegar
+              Deslize horizontalmente para navegar
             </div>
           )}
         </div>
@@ -357,11 +399,11 @@ export default function CardSlider({
           </div>
         )}
 
-        {/* Mobile Swipe Instructions */}
+        {/* Mobile Swipe Instructions - Updated */}
         {isMobile && (
           <div className="text-center mt-6">
             <p className="text-sm text-gray-500">
-              👆 Toque nos pontos ou deslize para navegar
+              👆 Toque nos pontos ou deslize horizontalmente para navegar
             </p>
           </div>
         )}

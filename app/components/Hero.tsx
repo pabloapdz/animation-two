@@ -46,7 +46,7 @@ export default function Hero() {
 
   return (
     <section id="home" className="relative flex min-h-screen items-center justify-center overflow-hidden bg-white">
-      {/* Subtle floating objects */}
+      {/* Subtle floating objects - Responsivo */}
       <motion.div
         animate={{
           y: [-20, 20, -20],
@@ -59,7 +59,7 @@ export default function Hero() {
           ease: "easeInOut",
           repeatType: "reverse",
         }}
-        className="absolute top-20 left-20 h-3 w-3 rounded-full bg-blue-500/20"
+        className="absolute top-16 left-4 md:top-20 md:left-20 h-2 w-2 md:h-3 md:w-3 rounded-full bg-blue-500/20"
       />
       <motion.div
         animate={{
@@ -74,7 +74,7 @@ export default function Hero() {
           repeatType: "reverse",
           delay: 1,
         }}
-        className="absolute top-40 right-32 h-2 w-2 rounded-full bg-purple-500/30"
+        className="absolute top-32 right-8 md:top-40 md:right-32 h-1.5 w-1.5 md:h-2 md:w-2 rounded-full bg-purple-500/30"
       />
       <motion.div
         animate={{
@@ -89,7 +89,7 @@ export default function Hero() {
           repeatType: "reverse",
           delay: 2,
         }}
-        className="absolute bottom-32 left-1/4 h-4 w-4 rounded-full bg-indigo-500/20"
+        className="absolute bottom-24 left-8 md:bottom-32 md:left-1/4 h-3 w-3 md:h-4 md:w-4 rounded-full bg-indigo-500/20"
       />
       <motion.div
         animate={{
@@ -104,10 +104,10 @@ export default function Hero() {
           repeatType: "reverse",
           delay: 3,
         }}
-        className="absolute bottom-20 right-20 h-2 w-2 rounded-full bg-pink-500/25"
+        className="absolute bottom-16 right-4 md:bottom-20 md:right-20 h-1.5 w-1.5 md:h-2 md:w-2 rounded-full bg-pink-500/25"
       />
       
-      {/* Geometric shapes */}
+      {/* Geometric shapes - Responsivo */}
       <motion.div
         animate={{
           y: [-10, 15, -10],
@@ -121,7 +121,7 @@ export default function Hero() {
           repeatType: "reverse",
           delay: 0.5,
         }}
-        className="absolute top-1/4 right-1/4 h-8 w-8 rotate-45 border border-gray-200"
+        className="absolute top-1/4 right-8 md:right-1/4 h-6 w-6 md:h-8 md:w-8 rotate-45 border border-gray-200"
       />
       <motion.div
         animate={{
@@ -136,25 +136,25 @@ export default function Hero() {
           repeatType: "reverse",
           delay: 1.5,
         }}
-        className="absolute bottom-1/3 left-1/4 h-6 w-6 rotate-12 border border-gray-300"
+        className="absolute bottom-1/3 left-8 md:left-1/4 h-4 w-4 md:h-6 md:w-6 rotate-12 border border-gray-300"
       />
 
       <motion.div 
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="relative z-10 mx-auto max-w-6xl px-6 text-center"
+        className="relative z-10 mx-auto max-w-6xl px-4 md:px-6 text-center"
       >
-        <motion.div variants={wordVariants} className="mb-8">
-          <span className="inline-flex items-center rounded-full bg-gray-50 px-4 py-2 text-sm font-medium text-gray-700 ring-1 ring-gray-200">
+        <motion.div variants={wordVariants} className="mb-6 md:mb-8">
+          <span className="inline-flex items-center rounded-full bg-gray-50 px-3 py-1.5 md:px-4 md:py-2 text-xs md:text-sm font-medium text-gray-700 ring-1 ring-gray-200">
             ✨ Full Stack Developer
           </span>
         </motion.div>
 
-        <div className="space-y-4">
+        <div className="space-y-2 md:space-y-4">
           <motion.div
             variants={titleVariants}
-            className="text-6xl font-bold tracking-tight text-gray-900 sm:text-7xl lg:text-8xl"
+            className="text-4xl md:text-6xl lg:text-7xl xl:text-8xl font-bold tracking-tight text-gray-900"
           >
             <motion.div className="flex justify-center">
               {creativeText.split("").map((letter, index) => (
@@ -172,7 +172,7 @@ export default function Hero() {
 
           <motion.div
             variants={titleVariants}
-            className="text-6xl font-bold tracking-tight sm:text-7xl lg:text-8xl"
+            className="text-4xl md:text-6xl lg:text-7xl xl:text-8xl font-bold tracking-tight"
           >
             <motion.div className="flex justify-center">
               {developerText.split("").map((letter, index) => (
@@ -187,7 +187,7 @@ export default function Hero() {
                   </span>
                   {index === developerText.length - 1 && (
                     <motion.div
-                      className="absolute -bottom-2 left-0 h-1 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600"
+                      className="absolute -bottom-1 md:-bottom-2 left-0 h-0.5 md:h-1 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600"
                       initial={{ width: 0 }}
                       animate={{ width: "100%" }}
                       transition={{ 
@@ -204,7 +204,7 @@ export default function Hero() {
 
         <motion.p
           variants={wordVariants}
-          className="mx-auto mt-8 max-w-2xl text-xl leading-relaxed text-gray-600"
+          className="mx-auto mt-6 md:mt-8 max-w-2xl text-base md:text-xl leading-relaxed text-gray-600 px-4 md:px-0"
         >
           Crafting digital experiences that blend creativity with cutting-edge technology. 
           Specialized in React, Next.js, and animations that captivate users.
@@ -212,13 +212,13 @@ export default function Hero() {
 
         <motion.div 
           variants={wordVariants}
-          className="mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row"
+          className="mt-8 md:mt-12 flex flex-col items-center justify-center gap-3 md:gap-4 sm:flex-row px-4 md:px-0"
         >
           <motion.a
             href="#projects"
             whileHover={{ scale: 1.05, y: -2 }}
             whileTap={{ scale: 0.95 }}
-            className="group relative inline-flex items-center justify-center overflow-hidden rounded-full bg-gray-900 px-8 py-4 text-lg font-semibold text-white shadow-lg transition-all duration-300 hover:shadow-xl"
+            className="group relative inline-flex items-center justify-center overflow-hidden rounded-full bg-gray-900 px-6 py-3 md:px-8 md:py-4 text-base md:text-lg font-semibold text-white shadow-lg transition-all duration-300 hover:shadow-xl w-full sm:w-auto"
           >
             <span className="relative z-10">View My Work</span>
             <motion.div
@@ -231,11 +231,11 @@ export default function Hero() {
             href="#contact"
             whileHover={{ scale: 1.05, y: -2 }}
             whileTap={{ scale: 0.95 }}
-            className="group inline-flex items-center justify-center rounded-full border-2 border-gray-300 bg-white px-8 py-4 text-lg font-semibold text-gray-700 transition-all duration-300 hover:border-gray-400 hover:bg-gray-50"
+            className="group inline-flex items-center justify-center rounded-full border-2 border-gray-300 bg-white px-6 py-3 md:px-8 md:py-4 text-base md:text-lg font-semibold text-gray-700 transition-all duration-300 hover:border-gray-400 hover:bg-gray-50 w-full sm:w-auto"
           >
             <span>Let's Connect</span>
             <motion.svg
-              className="ml-2 h-5 w-5"
+              className="ml-2 h-4 w-4 md:h-5 md:w-5"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -250,10 +250,10 @@ export default function Hero() {
 
         <motion.div
           variants={wordVariants}
-          className="mt-16 flex flex-col items-center justify-center space-y-4 opacity-60 sm:flex-row sm:space-x-8 sm:space-y-0"
+          className="mt-12 md:mt-16 flex flex-col items-center justify-center space-y-3 md:space-y-4 opacity-60 sm:flex-row sm:space-x-6 md:space-x-8 sm:space-y-0 px-4 md:px-0"
         >
-          <div className="text-sm font-medium text-gray-500">Technologies I master:</div>
-          <div className="flex flex-wrap justify-center gap-4">
+          <div className="text-xs md:text-sm font-medium text-gray-500 text-center">Technologies I master:</div>
+          <div className="flex flex-wrap justify-center gap-2 md:gap-4">
             {["React", "Next.js", "TypeScript", "Tailwind", "Node.js", "Python"].map((tech, index) => (
               <motion.span
                 key={tech}
@@ -261,7 +261,7 @@ export default function Hero() {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 2.5 + index * 0.1 }}
                 whileHover={{ scale: 1.1, color: "#3b82f6" }}
-                className="text-sm font-medium text-gray-600 transition-colors duration-200"
+                className="text-xs md:text-sm font-medium text-gray-600 transition-colors duration-200"
               >
                 {tech}
               </motion.span>
@@ -270,21 +270,21 @@ export default function Hero() {
         </motion.div>
       </motion.div>
 
-      {/* Scroll Indicator */}
+      {/* Scroll Indicator - Responsivo */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 3 }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2"
+        className="absolute bottom-6 md:bottom-8 left-1/2 -translate-x-1/2"
       >
         <motion.div
           animate={{ y: [0, 10, 0] }}
           transition={{ duration: 2, repeat: Infinity }}
-          className="flex flex-col items-center space-y-2"
+          className="flex flex-col items-center space-y-1 md:space-y-2"
         >
-          <span className="text-sm text-gray-500">Scroll down</span>
+          <span className="text-xs md:text-sm text-gray-500">Scroll down</span>
           <motion.svg 
-            className="h-6 w-6 text-gray-400" 
+            className="h-5 w-5 md:h-6 md:w-6 text-gray-400" 
             fill="none" 
             stroke="currentColor" 
             viewBox="0 0 24 24"

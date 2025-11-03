@@ -54,6 +54,7 @@ const sections: Section[] = [
 export default function ScrollSection() {
   const [activeSection, setActiveSection] = useState(0);
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const sectionRefs = useRef<(HTMLDivElement | null)[]>([]);
 
@@ -64,6 +65,17 @@ export default function ScrollSection() {
 
   const currentSection = sections[activeSection];
   const isLastSection = activeSection === sections.length - 1;
+
+  // Check if mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Auto-rotate cards
   useEffect(() => {
@@ -113,97 +125,139 @@ export default function ScrollSection() {
   };
 
   return (
-    <section ref={containerRef} className="relative min-h-screen bg-white py-20">
-      <div className="mx-auto max-w-7xl px-6">
-        <div className="grid grid-cols-12 gap-8">
-          {/* Left Navigation Menu */}
-          <div className="col-span-3 sticky top-32 h-fit">
+    <section ref={containerRef} className="relative min-h-screen bg-white py-12 md:py-20">
+      <div className="mx-auto max-w-7xl px-4 md:px-6">
+        <div className={`${isMobile ? 'block' : 'grid grid-cols-12 gap-8'}`}>
+          {/* Left Navigation Menu - Mobile: Horizontal scroll, Desktop: Sticky sidebar */}
+          <div className={`${isMobile ? 'mb-8' : 'col-span-3 sticky top-32 h-fit'}`}>
             <div className="space-y-4">
-              <h2 className="text-2xl font-bold text-gray-900 mb-8">
-                Why Choose<br />
+              <h2 className={`${isMobile ? 'text-xl text-center' : 'text-2xl'} font-bold text-gray-900 mb-6 md:mb-8`}>
+                Why Choose<br className="hidden md:block" />
                 <span className="text-blue-600">Bofpipes Tech Pvt. Ltd.</span>
               </h2>
               
-              <nav className="space-y-2">
-                {sections.map((section, index) => (
-                  <motion.button
-                    key={section.id}
-                    onClick={() => scrollToSection(index)}
-                    className={`flex items-center w-full text-left p-3 rounded-lg transition-all duration-300 ${
-                      activeSection === index 
-                        ? 'bg-blue-50 border-l-4 border-blue-600' 
-                        : 'hover:bg-gray-50'
-                    }`}
-                    whileHover={{ x: 4 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    <div className="flex items-center space-x-3">
-                      <motion.div
-                        className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
-                          activeSection === index
-                            ? 'bg-blue-600 text-white'
-                            : 'bg-gray-200 text-gray-600'
+              {/* Mobile: Horizontal scroll navigation */}
+              {isMobile ? (
+                <div className="overflow-x-auto pb-4">
+                  <div className="flex space-x-3 min-w-max px-2">
+                    {sections.map((section, index) => (
+                      <motion.button
+                        key={section.id}
+                        onClick={() => scrollToSection(index)}
+                        className={`flex-shrink-0 flex items-center p-3 rounded-lg transition-all duration-300 ${
+                          activeSection === index 
+                            ? 'bg-blue-50 border-2 border-blue-600' 
+                            : 'bg-gray-50 border-2 border-transparent hover:bg-gray-100'
                         }`}
-                        animate={{
-                          scale: activeSection === index ? 1.1 : 1,
-                          backgroundColor: activeSection === index ? '#2563eb' : '#e5e7eb'
-                        }}
-                        transition={{ duration: 0.3 }}
+                        whileTap={{ scale: 0.95 }}
                       >
-                        {section.subtitle}
-                      </motion.div>
-                      <span className={`text-sm font-medium ${
-                        activeSection === index ? 'text-blue-900' : 'text-gray-700'
-                      }`}>
-                        {section.title}
-                      </span>
-                    </div>
-                    {activeSection === index && (
-                      <motion.div
-                        className="ml-auto w-2 h-2 bg-blue-600 rounded-full"
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        transition={{ duration: 0.3 }}
-                      />
-                    )}
-                  </motion.button>
-                ))}
-              </nav>
+                        <div className="flex items-center space-x-2">
+                          <motion.div
+                            className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
+                              activeSection === index
+                                ? 'bg-blue-600 text-white'
+                                : 'bg-gray-300 text-gray-600'
+                            }`}
+                            animate={{
+                              scale: activeSection === index ? 1.1 : 1,
+                            }}
+                            transition={{ duration: 0.3 }}
+                          >
+                            {section.subtitle}
+                          </motion.div>
+                          <span className={`text-sm font-medium whitespace-nowrap ${
+                            activeSection === index ? 'text-blue-900' : 'text-gray-700'
+                          }`}>
+                            {section.title}
+                          </span>
+                        </div>
+                      </motion.button>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                /* Desktop: Vertical navigation */
+                <nav className="space-y-2">
+                  {sections.map((section, index) => (
+                    <motion.button
+                      key={section.id}
+                      onClick={() => scrollToSection(index)}
+                      className={`flex items-center w-full text-left p-3 rounded-lg transition-all duration-300 ${
+                        activeSection === index 
+                          ? 'bg-blue-50 border-l-4 border-blue-600' 
+                          : 'hover:bg-gray-50'
+                      }`}
+                      whileHover={{ x: 4 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <div className="flex items-center space-x-3">
+                        <motion.div
+                          className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
+                            activeSection === index
+                              ? 'bg-blue-600 text-white'
+                              : 'bg-gray-200 text-gray-600'
+                          }`}
+                          animate={{
+                            scale: activeSection === index ? 1.1 : 1,
+                            backgroundColor: activeSection === index ? '#2563eb' : '#e5e7eb'
+                          }}
+                          transition={{ duration: 0.3 }}
+                        >
+                          {section.subtitle}
+                        </motion.div>
+                        <span className={`text-sm font-medium ${
+                          activeSection === index ? 'text-blue-900' : 'text-gray-700'
+                        }`}>
+                          {section.title}
+                        </span>
+                      </div>
+                      {activeSection === index && (
+                        <motion.div
+                          className="ml-auto w-2 h-2 bg-blue-600 rounded-full"
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          transition={{ duration: 0.3 }}
+                        />
+                      )}
+                    </motion.button>
+                  ))}
+                </nav>
+              )}
             </div>
           </div>
 
           {/* Right Content Area */}
-          <div className="col-span-9">
-            <div className="space-y-16">
+          <div className={`${isMobile ? '' : 'col-span-9'}`}>
+            <div className="space-y-12 md:space-y-16">
               {sections.map((section, index) => (
                 <motion.div
                   key={section.id}
                   ref={(el) => {
                     sectionRefs.current[index] = el;
                   }}
-                  className="py-8"
+                  className="py-6 md:py-8"
                   initial={{ opacity: 0, y: 50 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: index * 0.1 }}
                   viewport={{ once: true, margin: "-50px" }}
                 >
-                  <div className="mb-12">
+                  <div className="mb-8 md:mb-12">
                     <motion.div
-                      className="flex items-center space-x-4 mb-6"
+                      className="flex flex-col md:flex-row md:items-center space-y-2 md:space-y-0 md:space-x-4 mb-4 md:mb-6"
                       initial={{ opacity: 0, x: -20 }}
                       whileInView={{ opacity: 1, x: 0 }}
                       transition={{ duration: 0.6 }}
                     >
-                      <span className="text-6xl font-bold text-blue-600/20">
+                      <span className="text-4xl md:text-6xl font-bold text-blue-600/20">
                         {section.subtitle}
                       </span>
-                      <h3 className="text-3xl font-bold text-gray-900">
+                      <h3 className="text-2xl md:text-3xl font-bold text-gray-900">
                         {section.title}
                       </h3>
                     </motion.div>
                     
                     <motion.p
-                      className="text-lg text-gray-600 max-w-2xl leading-relaxed"
+                      className="text-base md:text-lg text-gray-600 max-w-2xl leading-relaxed"
                       initial={{ opacity: 0, y: 20 }}
                       whileInView={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.6, delay: 0.2 }}
@@ -221,69 +275,119 @@ export default function ScrollSection() {
                       transition={{ duration: 0.5 }}
                     >
                       <div className="relative w-full overflow-hidden">
-                        <motion.div 
-                          className="flex space-x-6"
-                          animate={{ 
-                            x: -currentCardIndex * 336 // 320px width + 16px gap
-                          }}
-                          transition={{ 
-                            duration: 0.6,
-                            ease: "easeInOut"
-                          }}
-                        >
-                          {section.cards.map((card, cardIndex) => (
-                            <motion.div
-                              key={card.id}
-                              className="flex-shrink-0 w-80 p-6 rounded-xl border bg-white text-gray-900 border-gray-200 hover:border-gray-300 relative overflow-hidden"
-                              animate={{ 
-                                scale: cardIndex === (currentCardIndex + 1) % section.cards.length ? 1.05 : 1
-                              }}
-                              transition={{ 
-                                duration: 0.6,
-                                ease: "easeInOut"
-                              }}
-                              whileHover={{ 
-                                y: cardIndex !== (currentCardIndex + 1) % section.cards.length ? -5 : 0,
-                                transition: { duration: 0.2 }
-                              }}
-                            >
-                            {/* Blue background overlay with fade effect - only for highlighted card */}
-                            {cardIndex === (currentCardIndex + 1) % section.cards.length && (
+                        {isMobile ? (
+                          /* Mobile: Stack cards vertically */
+                          <div className="space-y-4">
+                            {section.cards.map((card, cardIndex) => (
                               <motion.div
-                                className="absolute inset-0 bg-blue-600 rounded-xl"
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                exit={{ opacity: 0 }}
+                                key={card.id}
+                                className={`w-full p-4 md:p-6 rounded-xl border bg-white text-gray-900 border-gray-200 hover:border-gray-300 relative overflow-hidden ${
+                                  cardIndex === currentCardIndex ? 'ring-2 ring-blue-500' : ''
+                                }`}
+                                animate={{ 
+                                  scale: cardIndex === currentCardIndex ? 1.02 : 1,
+                                  y: cardIndex === currentCardIndex ? -2 : 0
+                                }}
                                 transition={{ 
-                                  duration: 0.8,
+                                  duration: 0.6,
                                   ease: "easeInOut"
                                 }}
-                              />
-                            )}
-                            
-                            {/* Content */}
-                            <div className={`relative z-10 ${cardIndex === (currentCardIndex + 1) % section.cards.length ? 'text-white' : 'text-gray-900'}`}>
-                              <div className="text-4xl mb-4">{card.icon}</div>
-                              <h4 className="text-xl font-semibold mb-3">
-                                {card.title}
-                              </h4>
-                              <p className={`text-sm leading-relaxed ${
-                                cardIndex === (currentCardIndex + 1) % section.cards.length ? 'text-blue-100' : 'text-gray-600'
-                              }`}>
-                                {card.description}
-                              </p>
-                            </div>
+                              >
+                                {/* Blue background overlay - only for highlighted card */}
+                                {cardIndex === currentCardIndex && (
+                                  <motion.div
+                                    className="absolute inset-0 bg-blue-600 rounded-xl"
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    exit={{ opacity: 0 }}
+                                    transition={{ 
+                                      duration: 0.8,
+                                      ease: "easeInOut"
+                                    }}
+                                  />
+                                )}
+                                
+                                {/* Content */}
+                                <div className={`relative z-10 ${cardIndex === currentCardIndex ? 'text-white' : 'text-gray-900'}`}>
+                                  <div className="text-3xl md:text-4xl mb-3 md:mb-4">{card.icon}</div>
+                                  <h4 className="text-lg md:text-xl font-semibold mb-2 md:mb-3">
+                                    {card.title}
+                                  </h4>
+                                  <p className={`text-sm leading-relaxed ${
+                                    cardIndex === currentCardIndex ? 'text-blue-100' : 'text-gray-600'
+                                  }`}>
+                                    {card.description}
+                                  </p>
+                                </div>
+                              </motion.div>
+                            ))}
+                          </div>
+                        ) : (
+                          /* Desktop: Horizontal sliding cards */
+                          <motion.div 
+                            className="flex space-x-6"
+                            animate={{ 
+                              x: -currentCardIndex * 336 // 320px width + 16px gap
+                            }}
+                            transition={{ 
+                              duration: 0.6,
+                              ease: "easeInOut"
+                            }}
+                          >
+                            {section.cards.map((card, cardIndex) => (
+                              <motion.div
+                                key={card.id}
+                                className="flex-shrink-0 w-80 p-6 rounded-xl border bg-white text-gray-900 border-gray-200 hover:border-gray-300 relative overflow-hidden"
+                                animate={{ 
+                                  scale: cardIndex === (currentCardIndex + 1) % section.cards.length ? 1.05 : 1
+                                }}
+                                transition={{ 
+                                  duration: 0.6,
+                                  ease: "easeInOut"
+                                }}
+                                whileHover={{ 
+                                  y: cardIndex !== (currentCardIndex + 1) % section.cards.length ? -5 : 0,
+                                  transition: { duration: 0.2 }
+                                }}
+                              >
+                                {/* Blue background overlay - only for highlighted card */}
+                                {cardIndex === (currentCardIndex + 1) % section.cards.length && (
+                                  <motion.div
+                                    className="absolute inset-0 bg-blue-600 rounded-xl"
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    exit={{ opacity: 0 }}
+                                    transition={{ 
+                                      duration: 0.8,
+                                      ease: "easeInOut"
+                                    }}
+                                  />
+                                )}
+                                
+                                {/* Content */}
+                                <div className={`relative z-10 ${cardIndex === (currentCardIndex + 1) % section.cards.length ? 'text-white' : 'text-gray-900'}`}>
+                                  <div className="text-4xl mb-4">{card.icon}</div>
+                                  <h4 className="text-xl font-semibold mb-3">
+                                    {card.title}
+                                  </h4>
+                                  <p className={`text-sm leading-relaxed ${
+                                    cardIndex === (currentCardIndex + 1) % section.cards.length ? 'text-blue-100' : 'text-gray-600'
+                                  }`}>
+                                    {card.description}
+                                  </p>
+                                </div>
+                              </motion.div>
+                            ))}
                           </motion.div>
-                        ))}
-                      </motion.div>
-                    </div>
+                        )}
+                      </div>
 
                       {/* Card Navigation Dots */}
-                      <div className="flex justify-center space-x-2 mt-8">
+                      <div className="flex justify-center space-x-2 mt-6 md:mt-8">
                         {section.cards.map((_, index) => (
                           <motion.button
                             key={index}
-                            className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                            className={`w-2.5 h-2.5 md:w-3 md:h-3 rounded-full transition-all duration-300 ${
                               index === currentCardIndex 
                                 ? 'bg-blue-600 scale-125' 
                                 : 'bg-gray-300 hover:bg-gray-400'
@@ -306,7 +410,7 @@ export default function ScrollSection() {
       {/* Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <motion.div
-          className="absolute top-1/4 right-1/4 w-96 h-96 bg-blue-100/30 rounded-full blur-3xl"
+          className="absolute top-1/4 right-1/4 w-64 md:w-96 h-64 md:h-96 bg-blue-100/30 rounded-full blur-3xl"
           animate={{
             scale: [1, 1.2, 1],
             opacity: [0.3, 0.5, 0.3],
@@ -318,7 +422,7 @@ export default function ScrollSection() {
           }}
         />
         <motion.div
-          className="absolute bottom-1/4 left-1/4 w-64 h-64 bg-amber-100/20 rounded-full blur-2xl"
+          className="absolute bottom-1/4 left-1/4 w-48 md:w-64 h-48 md:h-64 bg-amber-100/20 rounded-full blur-2xl"
           animate={{
             scale: [1.2, 1, 1.2],
             opacity: [0.2, 0.4, 0.2],
